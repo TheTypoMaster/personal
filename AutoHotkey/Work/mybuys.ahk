@@ -1,29 +1,24 @@
-#NoEnv						; Recommended for performance and compatibility with future AutoHotkey releases.
-SendMode Input				; Recommended for new scripts due to its superior speed and reliability.
-SetWorkingDir %A_ScriptDir%	; Ensures a consistent starting directory.
+#NoEnv                       ; Recommended for performance and compatibility with future AutoHotkey releases.
+SendMode Input               ; Recommended for new scripts due to its superior speed and reliability.
+SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
-
-!l::Run C:\Users\DSmith\Documents\AutoHotkey-Local\createRawHTML.ahk
-
-
-#NumPad2::Run C:\Users\DSmith\Dropbox\Portable Apps\AutoHotKey\Work\SQL-promotable-products.ahk
-
-#NumPad0::Run C:\Users\DSmith\Dropbox\Portable Apps\AutoHotKey\Work\show-shortcuts.ahk
-#NumPad7::Run C:\Users\DSmith\Dropbox\Portable Apps\AutoHotKey\Work\evernote-add-wearing.ahk
-#NumPad8::Run C:\Users\DSmith\Dropbox\Portable Apps\AutoHotKey\Work\evernote-add-walks.ahk
-;;#NumPad9::Run C:\Users\DSmith\Dropbox\Portable Apps\AutoHotKey\Work\evernote-add-generic.ahk
-
-
-^!v::Send ^v{TAB}^v
 
 ; ********** MYBUYS AUTOHOTKEY FILE -- FOR RUNNING ON WORK COMPUTER************
 
-; --------------- GENERIC SCRIPTS ---------------------------------------------
+
 ; reload current script
 #F11::
 Reload
 msgbox, Script reloaded.
 return
+
+
+; --------------- TESTING SCRIPTS AREA ----------------------------------------
+;!l::Run C:\Users\DSmith\Documents\AutoHotkey-Local\createRawHTML.ahk [MISC USE]
+#NumPad2::Run %A_ScriptDir%\sql-promotable-products-query.ahk
+#NumPad0::Run %A_ScriptDir%\show-shortcuts.ahk
+#NumPad7::Run %A_ScriptDir%\evernote-add-wearing.ahk
+#NumPad8::Run %A_ScriptDir%\evernote-add-walks.ahk
 
 
 ; --------------- TEXT EXPANSION ----------------------------------------------
@@ -67,6 +62,10 @@ return
 :o:;;cdssku::select * from CD_S_SKUS where client_identifier = '';{LEFT 2}
 :o:;;cdsopt::select * from CD_S_OPTIN where client_identifier = '';{LEFT 2}
 
+; --- Images ---
+:o:;;images::select * from rm_stored_images where client_image_id in (select id from rm_client_images where client_id in (select client_id from rm_client where identifier = ''));{LEFT 4}
+:o:;;cmr::select * from rm_stored_images where client_image_id in (select id from rm_client_images where client_id in (select client_id from rm_client where identifier = '')) and cmr_velocity_template is not null;{LEFT 42}
+
 ; --- Simple Text Shortcuts ---
 ::;;cdic::CD_I_CATEGORIES
 ::;;cdsc::CD_S_CATEGORIES
@@ -92,10 +91,7 @@ return
 
 ; open current script
 #F2::Run Notepad++.exe %A_ScriptDir%\MyBuys.ahk,, Max
-;open script directory
-;#F5::Run C:\Users\%A_UserName%\Dropbox\Portable Apps\AutoHotkey\Work\
-; open alert template fix tracker
-;#F4::Run C:\Users\DSmith\Dropbox\MyBuys\Template Fixes.txt
+
 ; kill firefox and re-open dev portal
 #Del::Run C:\Users\%A_UserName%\Dropbox\Portable Apps\AutoHotkey\Work\#no backup\restart-firefox.bat
 
@@ -105,13 +101,17 @@ FormatTime, date,, MM-dd-yy
 Run C:\Users\DSmith\Documents\AutoHotkey-Local\WorkLogs\Working On [%date%].txt,, Max
 return
 
+; ctrl+alt+v pastes salesforce comment into github window
+^!v::Send ^v{TAB}^v
+
+; ctrl+r opens file in excel
 ^r::
-temp := clipboard
+temp = %ClipboardAll%
 clipboard = 
 Send, ^c
 ClipWait
-Run Excel.exe %clipboard%,, Max
-clipboard := temp
+Run excel.exe %clipboard%,, Max
+clipboard = %temp%
 return
 
 
@@ -148,7 +148,7 @@ return
 
 ; run collect generated messages (opens any links within currently selected text in chrome)
 ^7::Run %A_ScriptDir%\collectGenMessages.ahk
-^8::Run %A_ScriptDir%\collectGenMessages-not html.ahk ;just for the day [04-29-15] 
+^8::Run %A_ScriptDir%\collectGenMessages-not html.ahk  ;[MISC USE]
 
 ; mockup file name validator -- stopped [04/23/15] 
  !p::Run C:\Users\DSmith\Dropbox\Portable Apps\AutoHotkey\Work\mockup.ahk
@@ -565,72 +565,3 @@ OpenCanopyPage()
 	}
 	return
 }
-
-
-:o:;;promo::
-(
-with results as (
-select  count(distinct product_id) as products,
-		sum(null_display) as null_display,
-		sum(promo_index) as promo_index,
-		sum(prices) as prices,
-		sum(in_stock) as in_stock,
-		sum(images) as images,
-		sum(cat) as cat,
-		sum(case when null_display = 1 and promo_index = 1 and prices = 1 and in_stock = 1 and images = 1 and cat = 1 then 1 else 0 end) as promotable
-from ( select  pr.product_id,
-				  case when pr.display_name is not null then 1 else 0 end as null_display,
-				  case when pr.promotion_index is null or pr.promotion_index <> -1 then 1 else 0 end as promo_index,
-				  case when (pr.prior_price is null) or (pr.prior_price >= pr.price) then 1 else 0 end as prices,
-				  ( select  count(distinct sk.product_id) as in_stock
-					from    rm_sku sk
-					where   sk.client_id = pr.client_id
-							and sk.product_id = pr.product_id
-							and sk.in_stock = 1 ) as in_stock,
-				  ( select  count(distinct im.product_id) as images
-					from    rm_client_images im
-					where   im.client_id = pr.client_id
-							and im.product_id = pr.product_id
-							and im.url_invalid_time is null
-							and im.type = 0 ) as images,
-				  ( select  count(distinct rel.product_id) as cat
-					from    rm_product_cat_rels rel
-							inner join rm_categories cat  on  cat.id = rel.category_id
-														  and ( cat.type is null or cat.type = 0 )
-					where   rel.product_id = pr.product_id ) as cat
-		  from    rm_client cl
-				  left outer join rm_product pr on  pr.client_id = cl.client_id
-		  where   cl.identifier = '&clientidentifier' ) results )
-
-select  'Total Products:' as description,
-		products as rowcount
-from    results
-union all
-select  'Non-Null Display Name:' as description,
-		null_display as rowcount
-from    results
-union all
-select  'Promotion Index <> -1 or is null:' as description,
-		promo_index as rowcount
-from    results
-union all
-select  'Prior Price >= Current Price:' as description,
-		prices as rowcount
-from    results
-union all
-select  'Products In Stock:' as description,
-		in_stock as rowcount
-from    results
-union all
-select  'Valid Images:' as description,
-		images as rowcount
-from    results
-union all
-select  'Valid Category:' as description,
-		cat as rowcount
-from    results
-union all
-select  'Promotable Products:' as description,
-		promotable as rowcount
-from    results;
-)

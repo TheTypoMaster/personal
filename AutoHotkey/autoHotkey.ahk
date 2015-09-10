@@ -1,9 +1,11 @@
-#NoEnv						; Recommended for performance and compatibility with future AutoHotkey releases.
-SendMode Input				; Recommended for new scripts due to its superior speed and reliability.
-SetWorkingDir %A_ScriptDir%	; Ensures a consistent starting directory.
-#NoTrayIcon					; Turn off tray icon.
+#NoEnv                       ; Recommended for performance and compatibility with future AutoHotkey releases.
+SendMode Input               ; Recommended for new scripts due to its superior speed and reliability.
+SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
+#NoTrayIcon                  ; Turn off tray icon.
+
 
 ; ********** PRIMARY AUTOHOTKEY FILE -- FOR RUNNING ON ALL COMPUTERS **********
+
 
 ; reload current script
 #F12::
@@ -18,19 +20,20 @@ return
 :o:;;cred::5466160298166107
 ; 000/5/19
 
-; for autohotkey vars
+; for autohotkey vars [MISC USE]
 ;:o*:..::%%{LEFT}
+
+; --------------- DATE SHORTCUTS ----------------------------------------------
+; insert M/d
+::;d::
+FormatTime, date,, M/d
+SendInput %date%{space}
+return
 
 ; insert [MM/dd]
 ::;;d::
 FormatTime, date,, MM/dd
 SendInput [%date%]{space}
-return
-
-;insert M/d
-::;d::
-FormatTime, date,, M/d
-SendInput %date%{space}
 return
 
 ; insert [MM/dd/yy]
@@ -39,37 +42,37 @@ FormatTime, date,, MM/dd/yy
 SendInput [%date%]
 return
 
+; insert MM-dd-yy
+:o:;dll::
+FormatTime, date,, MM-dd-yy
+SendInput %date%{space}
+return
+
 ; insert [MM-dd-yy]
 :o:;;dll::
 FormatTime, date,, MM-dd-yy
 SendInput [%date%]{space}
 return
 
-; insert MM-dd-yy
-:o:;;dl::
-FormatTime, date,, MM-dd-yy
-SendInput %date%{space}
-return
-
 ; insert yyyy-MM-dd
-:o:;;dff::
+:o:;;ddf::
 FormatTime, date,, yyyy-MM-dd
 SendInput %date%{space}
 return
 
 
-; --------------- FOLDER SHORTCUTS --------------------------------------------
+; --------------- FOLDER / TEXT FILE SHORTCUTS --------------------------------
 ;$#`::Send #e ;open My Computer/Windows Explorer
 $#`::Run C:\Users\%A_UserName%\Desktop
 
-#1::Run C:\Users\%A_UserName%\Documents,, Max
+#1::Run C:\Users\%A_UserName%\Documents
 #2::Run C:\Users\%A_UserName%\Downloads
 #3::Run C:\Users\%A_UserName%\Dropbox
-#4::Run C:\Users\%A_UserName%\Dropbox\Portable Apps\AutoHotKey
-#F1::Run Notepad++.exe C:\Users\%A_UserName%\Dropbox\Portable Apps\AutoHotkey\AutoHotkey.ahk
+#4::Run %A_ScriptDir%
 
-#F7::Run Notepad++.exe C:\Users\DSmith\Dropbox\zMISC\Podcasts.txt
-#F8::Run Notepad++.exe C:\Users\DSmith\Dropbox\zMISC\Great Courses\20th century fiction.txt
+#F1::Run Notepad++.exe %A_ScriptDir%\AutoHotkey.ahk
+#F7::Run Notepad++.exe C:\Users\%A_UserName%\Dropbox\zMISC\Podcasts.txt
+#F8::Run Notepad++.exe C:\Users\%A_UserName%\Dropbox\zMISC\Great Courses\20th century fiction.txt
 
 
 ; ---------------  APP SHORTCUTS ----------------------------------------------
@@ -80,13 +83,13 @@ Sleep 300
 Send ^n
 return
 
-; ctrl+win+alt+o generates new random password in keypass
+; ctrl+win+alt+o generates new random password in keypass [MISC USE]
 ^#!o::
 Send {TAB}{TAB}{ENTER}gu{ENTER}
 Send +{TAB}+{TAB}^a
 return
 
-; break key opens calculator
+; win+break opens calculator
 #break::
 Run, calc.exe
 return
@@ -105,12 +108,12 @@ $!CapsLock::send {CapsLock}
 #Esc::!F4
 #w::Send ^w
 
-; replaces ` key as backspace key, use as normal with ctrl or shift
+; replaces ` key with _ key, use as normal with alt or shift
 $`:: send _
 $+`::send {~}
 $!`::send ``
 
-; alt+leftClick = back, alt+rightClick = forward
+; alt+leftClick = back, alt+rightClick = forward [MISC USE]
 !LButton::Send !{LEFT}
 !RButton::Send !{RIGHT}
 
@@ -119,7 +122,7 @@ $!`::send ``
 ; win+leftClick copies, win+rightClick pastes
 #LButton::Send ^c
 #RButton::Send ^v
-; win+alt+leftClick = enter, win+alt+rightClick = backspace
+; win+alt+leftClick = enter, win+alt+rightClick = backspace [MISC USE]
 !#LButton::Send {Enter}
 !#RButton::Send {Backspace}
 
@@ -127,14 +130,12 @@ $!`::send ``
 ; --------------- WINDOWS EXPLORER HOTKEYS ------------------------------------
 ; ctrl+e opens file in notepad
 ^e::
-;msgbox test n++
-temp := clipboard
+temp = %ClipboardAll%
 clipboard = 
 Send, ^c
 ClipWait
 Run Notepad++.exe %clipboard%,, Max
-clipboard := temp
-return
+clipboard = %temp%
 
 
 ; --------------- CHROME HOTKEYS ----------------------------------------------
@@ -171,12 +172,44 @@ return
 ; function gets selected text without clearing clipboard
 GetSelectedText()
 {
-	tmp = %ClipboardAll%	;save clipboard
-	Clipboard := "" 		;clear clipboard
-	Send, ^c 				;simulate Ctrl+C (=selection in clipboard)
-	ClipWait, 1 			;wait until clipboard contains data
-	selection = %Clipboard% ;save the content of the clipboard
-	Clipboard = %tmp% 		;restore old content of the clipboard
+	tmp = %ClipboardAll%      ;save clipboard
+	Clipboard := ""           ;clear clipboard
+	Send, ^c                  ;simulate ctrl+C (=selection in clipboard)
+	ClipWait                  ;wait until clipboard contains data
+	selection = %Clipboard%   ;save the content of the clipboard
+	Clipboard = %tmp%         ;restore old content of the clipboard
 	return (selection = "" ? Clipboard : selection)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
