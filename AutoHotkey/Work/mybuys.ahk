@@ -104,8 +104,8 @@ return
 ; ctrl+alt+v pastes salesforce comment into github window
 ^!v::Send ^v{TAB}^v
 
-; ctrl+r opens file in excel
-^r::
+; ctrl+shift+r opens file in excel
+^+r::
 temp = %ClipboardAll%
 clipboard = 
 Send, ^c
@@ -117,41 +117,43 @@ return
 
 ; --------------- MEDIA CONTROLS ----------------------------------------------
 ; win+numpad* mutes volume
-#NUMPADMULT::Send {VOLUME_MUTE}
+#NUMPADENTER::Send {VOLUME_MUTE}
 ; win+numpad+ increases volume
 #NUMPADADD::Send {VOLUME_UP}
 ; win+numpad- decreases volume
 #NUMPADSUB::Send {VOLUME_DOWN}
 
-; win+numpadEnter pauses/plays vlc
-#NUMPADENTER::
-WinExist("VLC media player ahk_class QWidget")
-ControlSend,, {space}, ahk_class QWidget
-return
-
-; break also pauses/plays vlc
+; break pauses/plays vlc/spotify
 break::
 WinExist("VLC media player ahk_class QWidget")
-ControlSend,, {space}, ahk_class QWidget
+	ControlSend,, {space}, ahk_class QWidget
+WinExist("ahk_class SpotifyMainWindow")
+	Send {Media_Play_Pause}
 return
 
-; break also pauses/plays vlc
-!break::
+; win+numpad / goes to previous song
+#NUMPADDIV::
 if WinExist("ahk_class SpotifyMainWindow")
-ControlSend,, {space}, ahk_class SpotifyMainWindow
+	Send {Media_Prev}
+return
+
+; win+numpad * goes to next song
+#NUMPADMULT::
+if WinExist("ahk_class SpotifyMainWindow")
+	Send {Media_Next}
 return
 
 
 ; --------------- EXTERNAL AUTOHOTKEY SCRIPTS ---------------------------------
 ; ctrl+l opens time tracking
-^!l::Run %A_ScriptDir%\taskTimer.ahk
+^!l::Run %A_ScriptDir%\task-timer.ahk
 
 ; run collect generated messages (opens any links within currently selected text in chrome)
-^7::Run %A_ScriptDir%\collectGenMessages.ahk
-^8::Run %A_ScriptDir%\collectGenMessages-not html.ahk  ;[MISC USE]
+^7::Run %A_ScriptDir%\open-links-html.ahk
+^8::Run %A_ScriptDir%\open-links-generic.ahk  ;[MISC USE]
 
 ; mockup file name validator -- stopped [04/23/15] 
- !p::Run C:\Users\DSmith\Dropbox\Portable Apps\AutoHotkey\Work\mockup.ahk
+!p::Run %A_ScriptDir%\create-raw-html.ahk
 
 ; ctrl+q alternates cursor back and forth between two side-by-side screens
 !q::

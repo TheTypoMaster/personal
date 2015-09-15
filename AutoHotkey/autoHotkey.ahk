@@ -17,33 +17,33 @@ return
 ; --------------- TEXT EXPANSION ---------------------------------------------- 
 ::;atk::autohotkey
 :o*:;;gm::dsmith060@gmail.com
-:o:;;cred::5466160298166107
-; 000/5/19
+:o:;;cred::379777769071008
+; amex/8148/9/20
 
 ; for autohotkey vars [MISC USE]
 ;:o*:..::%%{LEFT}
 
 ; --------------- DATE SHORTCUTS ----------------------------------------------
 ; insert M/d
-::;d::
+::;;d::
 FormatTime, date,, M/d
 SendInput %date%{space}
 return
 
 ; insert [MM/dd]
-::;;d::
+::;;dd::
 FormatTime, date,, MM/dd
 SendInput [%date%]{space}
 return
 
 ; insert [MM/dd/yy]
-:o:;;dd::
+:o:;;ddd::
 FormatTime, date,, MM/dd/yy
 SendInput [%date%]
 return
 
 ; insert MM-dd-yy
-:o:;dll::
+:o:;;dll::
 FormatTime, date,, MM-dd-yy
 SendInput %date%{space}
 return
@@ -71,8 +71,10 @@ $#`::Run C:\Users\%A_UserName%\Desktop
 #4::Run %A_ScriptDir%
 
 #F1::Run Notepad++.exe %A_ScriptDir%\AutoHotkey.ahk
-#F7::Run Notepad++.exe C:\Users\%A_UserName%\Dropbox\zMISC\Podcasts.txt
-#F8::Run Notepad++.exe C:\Users\%A_UserName%\Dropbox\zMISC\Great Courses\20th century fiction.txt
+#F5::Run Notepad++.exe C:\Users\%A_UserName%\Dropbox\Documents\Ideas.txt
+#F6::Run Notepad++.exe %A_ScriptDir%\Home\Dictionary\temp\toLearn.txt
+#F7::Run Notepad++.exe C:\Users\%A_UserName%\Dropbox\Documents\Podcasts\Podcasts.txt
+#F8::Run Notepad++.exe C:\Users\%A_UserName%\Dropbox\Documents\Great Courses\chivalry.txt
 
 
 ; ---------------  APP SHORTCUTS ----------------------------------------------
