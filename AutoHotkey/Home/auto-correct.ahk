@@ -601,7 +601,7 @@ return  ; This makes the above hotstrings do nothing so that they override the i
 
 ::avengence::a vengeance
 ::adbandon::abandon
-::abandonned::abandoned
+::abandoned::abandoned
 ::aberation::aberration
 ::aborigene::aborigine
 ::abortificant::abortifacient
