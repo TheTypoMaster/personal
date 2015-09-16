@@ -2600,7 +2600,7 @@ return  ; This makes the above hotstrings do nothing so that they override the i
 ::identicial::identical
 ::identifers::identifiers
 ::identofy::identify
-::idealogies::ideologies
+::ideologies::ideologies
 ::idealogy::ideology
 ::idiosyncracy::idiosyncrasy
 ::ideosyncratic::idiosyncratic
